@@ -1,8 +1,24 @@
-// import AppError from '../errors/AppError';
+import { getCustomRepository } from 'typeorm';
+import AppError from '../errors/AppError';
+import TransactionsRepository from '../repositories/TransactionsRepository';
+
+interface Request {
+  id: string;
+}
 
 class DeleteTransactionService {
-  public async execute(): Promise<void> {
-    // TODO
+  public async execute({ id }: Request): Promise<void> {
+    const transactionsRepository = getCustomRepository(TransactionsRepository);
+
+    const findId = transactionsRepository.findOne({
+      where: { id },
+    });
+
+    if (!findId) {
+      throw new AppError('Could not find Id!', 400);
+    }
+
+    await transactionsRepository.delete({ id });
   }
 }
 
